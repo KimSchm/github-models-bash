@@ -59,6 +59,12 @@ Here are some examples of how to use the script:
   ./github_llm.sh --rate openai/gpt-4o <token>
   ```
 
+## TO-DO
+
+- Add file support other than raw text
+- Add file type detection
+- Add checks for if the user has all reqs installed
+
 ## Contributing Guidelines
 
 We welcome contributions to this project. Please follow these guidelines when contributing:
