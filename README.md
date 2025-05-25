@@ -53,6 +53,12 @@ Here are some examples of how to use the script:
   ./github_llm.sh -d src "Summarize module" openai/gpt-4o <token>
   ```
 
+- Include all files under a directory and its subdirectories as context:
+
+  ```bash
+  ./github_llm.sh -r src "Summarize module recursively" openai/gpt-4o <token>
+  ```
+
 - Show rate limits for a model:
 
   ```bash
@@ -70,10 +76,25 @@ The script supports the following file types:
 
 For unsupported file types, the script will use the text option.
 
-## TO-DO
+## Generating a GitHub Token
 
-- Add file type detection
-- Add checks for if the user has all reqs installed
+To use this script, you need a GitHub Personal Access Token (PAT) with `models:read` permission. Follow these steps to generate one:
+
+1. Go to [GitHub Settings - Tokens](https://github.com/settings/tokens).
+2. Click "Generate new token" (choose "Fine-grained token" if available).
+3. Give your token a descriptive name and (optionally) set an expiration.
+4. Under "Resource owner," select your user or organization.
+5. Under "Repository access," select "All repositories" or limit as needed.
+6. Under "Permissions," add:
+    - `models:read`
+7. Click "Generate token" and copy the value (it will only be shown once).
+8. Use this token as the last argument to this script.
+
+For more details, see [GitHub Documentation](https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models).
+
+**TIP:** Never share your token publicly. Treat it like a password.
+
+## TO-DO
 
 ## Contributing Guidelines
 
@@ -87,7 +108,7 @@ We welcome contributions to this project. Please follow these guidelines when co
 
 ## Code of Conduct
 
-This project adheres to the Contributor Covenant code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to [email@example.com](mailto:email@example.com).
+This project adheres to the Contributor Covenant code of conduct. By participating, you are expected to uphold this code.
 
 ## Badges and Links
 
