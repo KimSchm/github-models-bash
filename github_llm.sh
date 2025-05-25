@@ -57,6 +57,14 @@ require_jq() {
   command -v jq >/dev/null 2>&1 || { echo "jq is required but not installed."; exit 1; }
 }
 
+require_file() {
+  command -v file >/dev/null 2>&1 || { echo "file is required but not installed."; exit 1; }
+}
+
+require_pdftotext() {
+  command -v pdftotext >/dev/null 2>&1 || { echo "pdftotext is required but not installed."; exit 1; }
+}
+
 # ---------- Model and Rate Limit Functions ----------
 
 list_models() {
@@ -142,17 +150,40 @@ check_rest_api_rate_usage() {
 
 # ---------- File Handling Functions ----------
 
-# function that retunrns file content as string not json!
+detect_file_type() {
+  local file="$1"
+  file --mime-type -b "$file"
+}
+
 build_files_json_from_file() {
-    local file="$1"
-    if [[ ! -f "$file" ]]; then
-        echo "File not found: $file"
-        exit 1
-    fi
-    # converts fileconent to string
-    local content
-    content=$(jq -Rs . < "$file")
-    echo "$content"
+  local file="$1"
+  if [[ ! -f "$file" ]]; then
+    echo "File not found: $file"
+    exit 1
+  fi
+
+  local content
+  local mime_type
+  mime_type=$(detect_file_type "$file")
+
+  case "$mime_type" in
+    text/*)
+      content=$(jq -Rs . < "$file")
+      ;;
+    application/pdf)
+      content=$(pdftotext "$file" -)
+      content=$(jq -Rs . <<< "$content")
+      ;;
+    image/* | audio/*)
+      content=$(base64 "$file")
+      content=$(jq -Rs . <<< "$content")
+      ;;
+    *)
+      content=$(jq -Rs . < "$file")
+      ;;
+  esac
+
+  echo "$content"
 }
 
 build_files_json_from_dir() {
@@ -245,6 +276,8 @@ print_model_response() {
 # ---------- Main Argument Parsing ----------
 
 require_jq
+require_file
+require_pdftotext
 
 if [[ $# -eq 1 && "$1" == "token" ]]; then
   show_token_help

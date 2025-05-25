@@ -6,10 +6,10 @@ This repository contains a Bash script that interacts with GitHub's Models API. 
 
 ## Installation Instructions
 
-To use this script, you need to have `jq` installed. You can install `jq` using the following command:
+To use this script, you need to have `jq`, `file`, and `pdftotext` installed. You can install them using the following commands:
 
 ```bash
-sudo apt-get install jq
+sudo apt-get install jq file poppler-utils
 ```
 
 Clone this repository to your local machine:
@@ -59,9 +59,19 @@ Here are some examples of how to use the script:
   ./github_llm.sh --rate openai/gpt-4o <token>
   ```
 
+## Supported File Types
+
+The script supports the following file types:
+
+- Text files (e.g., `.txt`, `.md`)
+- PDF files (requires `pdftotext`)
+- Image files (e.g., `.jpg`, `.png`)
+- Audio files (e.g., `.mp3`, `.wav`)
+
+For unsupported file types, the script will use the text option.
+
 ## TO-DO
 
-- Add file support other than raw text
 - Add file type detection
 - Add checks for if the user has all reqs installed
 
