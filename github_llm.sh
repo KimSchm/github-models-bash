@@ -58,18 +58,15 @@ show_token_help() {
     printf "\nTIP: Never share your token publicly. Treat it like a password.\n"
     exit 0
 }
-# Checks if jq is installed
-require_jq() {
-    command -v jq >/dev/null 2>&1 || { echo "jq is required but not installed."; exit 1; }
+
+# Checks if given files are installed, exit with an error if not
+require() {
+    for tool in "$@"
+    do
+        command -v $tool >/dev/null 2>&1 || { echo "$tool is required but not installed."; exit 1; }
+    done
 }
-# Checks if the 'file' command is installed
-require_file() {
-    command -v file >/dev/null 2>&1 || { echo "file is required but not installed."; exit 1; }
-}
-# Checks if pdftotext is installed
-require_pdftotext() {
-    command -v pdftotext >/dev/null 2>&1 || { echo "pdftotext is required but not installed."; exit 1; }
-}
+
 # Detects the MIME type of a file
 # Output: MIME type string, e.g. "text/plain", "image/jpeg", etc.
 detect_file_type() {
@@ -365,9 +362,7 @@ prompt() {
 # ---------- Main Logic ----------
 main(){
     # Check for required commands and tools
-    require_jq
-    require_file
-    require_pdftotext
+    require "jq" "file" "pdftotext"
 
     # Check if the user requested token help
     if [[ $# -eq 1 && "$1" == "token" ]]; then
