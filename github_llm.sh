@@ -11,7 +11,7 @@ usage() {
     printf "Usage:\n"
     printf "  %s [-l | -f <file> | -d <dir> | -r <dir> | --rate <model>] <prompt> <model> <token>\n" "$0"
     printf "\nOptions:\n"
-    printf "  -l, --list-models         List all available models (requires <token> only)\n"
+    printf "  -l, --list-models         List all available models (does not need <model> <token>)\n"
     printf "  -f <file>                 Include one file as context\n"
     printf "  -d <dir>                  Include all files under <dir> as context\n"
     printf "  -r <dir>                  Include all files under <dir> and its recursive dir's as context\n"
@@ -21,7 +21,7 @@ usage() {
     printf "  <model>                   Model ID, e.g., openai/gpt-4o\n"
     printf "  <token>                   GitHub PAT with models:read permission\n\n"
     printf "Examples:\n"
-    printf "  %s -l <token>\n" "$0"
+    printf "  %s -l\n" "$0"
     printf "      List all available models using the provided token.\n\n"
     printf "  %s \"Explain recursion\" openai/gpt-4o <token>\n" "$0"
     printf "      Send a prompt to the specified model.\n\n"
@@ -79,18 +79,11 @@ detect_file_type() {
 
 # Lists all available models from GitHub Models API
 list_models() {
-    local token="$1"
-    get_models "$token" | jq
-    exit 0
-}
-# Gets the list of available models from GitHub Models API
-get_models() {
-    local token="$1"
     curl -sSL \
         -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer $token" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        https://models.github.ai/catalog/models
+        https://models.github.ai/catalog/models | jq
+    exit 0
 }
 # Gets the rate tier for a specific model
 get_model_rate_tier() {
@@ -409,11 +402,7 @@ main(){
 
     # If listing models is requested, ensure a token is provided
     if [[ $list_models_flag -eq 1 ]]; then
-        if [[ $# -lt 1 ]]; then
-            echo "Token required for listing models."
-            usage
-        fi
-        list_models "$1"
+        list_models
     fi
 
     # Validate rate limit option
